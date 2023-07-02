@@ -1,7 +1,15 @@
 import { pb, jce } from "../core"
 import { NOOP, timestamp, OnlineStatus, log } from "../common"
-import { PrivateMessage, GroupMessage, DiscussMessage, genDmMessageId, genGroupMessageId } from "../message"
+import {
+	PrivateMessage,
+	GroupMessage,
+	DiscussMessage,
+	genDmMessageId,
+	genGroupMessageId,
+	MessageElem
+} from '../message'
 import { GroupMessageEvent, DiscussMessageEvent } from "../events"
+import { compareImage, handleAtInvdu, handleAtMe, hasMsgOtherThanAt } from '../../src/oicq'
 
 type Client = import("../client").Client
 
@@ -362,7 +370,11 @@ export function dmMsgSyncListener(this: Client, payload: Buffer, seq: number) {
 
 const fragmap = new Map<string, GroupMessage[]>()
 
+let lastRepeated: MessageElem[] = []
+let lastMessage: MessageElem[] = []
+
 export function groupMsgListener(this: Client, payload: Buffer) {
+	// console.log('groupMsgListener', this, payload)
 	this.stat.recv_msg_cnt++
 	if (!this._sync_cookie) return
 	let msg = new GroupMessage(pb.decode(payload)[1]) as GroupMessageEvent
@@ -404,6 +416,18 @@ export function groupMsgListener(this: Client, payload: Buffer) {
 			info.title = sender.title
 			info.level = sender.level
 			info.last_sent_time = timestamp()
+		}
+		console.log('groupMsgListener', msg, lastRepeated, lastMessage)
+		const atQQList: number[] = msg.message.filter((item: any) => item.type === 'at').map((item: any) => item.qq)
+		if (msg.atme) handleAtMe(msg, this)
+		else if (atQQList.includes(409174690) && !hasMsgOtherThanAt(msg.message)) {
+			handleAtInvdu(msg, this)
+		} else if (lastRepeated !== msg.message && (JSON.stringify(msg.message) === JSON.stringify(lastMessage) || compareImage(msg.message[0], lastMessage[0]))) {
+			this.pickGroup(msg.group_id).sendMsg(msg.message)
+			lastRepeated = msg.message
+			lastMessage = []
+		} else {
+			lastMessage = msg.message
 		}
 		this.logger.info(`recv from: [Group: ${msg.group_name}(${msg.group_id}), Member: ${sender.card || sender.nickname}(${sender.user_id})] ` + msg)
 		this.em("message.group." + msg.sub_type, msg)

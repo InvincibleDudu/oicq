@@ -6,7 +6,8 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "tsc && node ./bin/oicq"
+    "test": "tsc && node --openssl-legacy-provider --inspect ./bin/oicq 1015850524",
+    "start": "npx tsc src/main.ts && node src/main.js"
   },
   "engines": {
     "node": ">= v14"
@@ -29,15 +30,19 @@
     "axios": "^1.1.2",
     "log4js": "^6.3.0",
     "long": "^4.0.0",
+    "node-schedule": "^2.1.1",
     "pngjs": "^6.0.0",
-    "probe-image-size": "^7.2.2"
+    "probe-image-size": "^7.2.2",
+    "tencentcloud-sdk-nodejs": "^4.0.632"
   },
   "devDependencies": {
     "@types/node": "^16.7.2",
+    "@types/node-schedule": "^2.1.0",
     "@types/pngjs": "^6.0.1",
     "@types/probe-image-size": "^7.0.1",
     "@types/ws": "^8.2.0",
     "protobufjs": "^6.11.2",
+    "typescript": "^5.1.6",
     "ws": "^8.2.3"
   },
   "files": [
