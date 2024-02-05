@@ -1,5 +1,5 @@
 import { bugCat, images } from './resource'
-import { chatBot } from './nlp'
+// import { chatBot } from './nlp'
 import { Client, Group, GroupMessage, ImageElem, MessageElem, PrivateMessage, Sendable, User } from '../lib'
 
 export function handlePrivateMessage(msg: PrivateMessage, client: Client) {
@@ -41,10 +41,10 @@ export function handleAtMe (e: GroupMessage, client: Client) {
       client.pickGroup(e.group_id).sendMsg([{ type: 'at', qq: e.sender.user_id }, images.fightMe])
       return
    }
-   chatBot(msg.replace(/@\S+/, '')).then((res) => {
-      m = res || m + '！'
-      client.pickGroup(e.group_id).sendMsg(m)
-   }).catch((e) => console.log('chatBot error 1', e))
+   // chatBot(msg.replace(/@\S+/, '')).then((res) => {
+   m = msg.replace(/@\S+/, '').replace(/[?？]/g, '') + '！'
+   client.pickGroup(e.group_id).sendMsg(m)
+   // }).catch((e) => console.log('chatBot error 1', e))
 }
 
 export function handleAtInvdu (e: GroupMessage, client: Client) {
