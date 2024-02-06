@@ -1,6 +1,7 @@
 import { bugCat, images } from './resource'
 // import { chatBot } from './nlp'
 import { Client, Group, GroupMessage, ImageElem, MessageElem, PrivateMessage, Sendable, User } from '../lib'
+import { countDays } from './util'
 
 export function handlePrivateMessage(msg: PrivateMessage, client: Client) {
    if (msg.sender.user_id !== 409174690 && !msg.raw_message.includes('@bot -')) return
@@ -69,4 +70,28 @@ export function hasMsgOtherThanAt(msg: MessageElem[]) {
 export function compareImage(img1: MessageElem, img2: MessageElem) {
    if (img1.type !== 'image' || img2.type !== 'image') return false
    return img1.file === img2.file
+}
+
+export function scheduleMsg(client: Client) {
+   console.log('scheduleMsg running')
+   let duckSent = false
+   const schedule = require('node-schedule')
+   const fpsquad = client.pickGroup(700673635)
+
+   let time = 0
+   let cd = 0
+   setInterval(() => {
+      time += 1
+      cd += 1
+      process.stdout.write(time + 's\r')
+      if (time >= 2000 && !duckSent) {
+         fpsquad.sendMsg(images.duck)
+         duckSent = true
+         time = 0
+      }
+   }, 1000)
+   schedule.scheduleJob({ hour: 3, minute: 30, second: 5 }, function() {
+      fpsquad.sendMsg('今天距fps小分队停更已过去' + countDays(new Date('02/28/2021')) + '天')
+   })
+
 }

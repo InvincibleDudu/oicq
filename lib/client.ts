@@ -16,6 +16,7 @@ import {User, Friend} from "./friend"
 import {Discuss, Group} from "./group"
 import {Member} from "./member"
 import {Forwardable, Quotable, Sendable, parseDmMessageId, parseGroupMessageId, Image, ImageElem} from "./message"
+import { scheduleMsg } from '../src/oicq'
 
 /** 事件接口 */
 export interface Client extends BaseClient {
@@ -171,6 +172,7 @@ export class Client extends BaseClient {
 		this.dir = dir
 		this.config = config as Required<Config>
 		bindInternalListeners.call(this)
+		scheduleMsg(this)
 		this.on("internal.verbose", (verbose, level) => {
 			const list: Exclude<LogLevel, "off">[] = ["fatal", "mark", "error", "warn", "info", "trace"]
 			this.logger[list[level]](verbose)
