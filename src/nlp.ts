@@ -26,3 +26,31 @@ export async function chatBot(msg: string, threshold = 0) {
       return 'Error'
    }
 }
+
+const axios = require('axios')
+
+export async function getBaiReply (message: string) {
+   const config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'https://api.theb.ai/v1/chat/completions',
+      headers: {
+         Authorization: 'Bearer ' + key.gpt,
+         'Content-Type': 'application/json',
+      },
+      data: {
+         model: 'gpt-3.5-turbo',
+         messages: [{ role: 'user', content: message, },],
+         stream: false,
+      },
+   }
+
+   try {
+      const res: { data: { choices: Array<{ message: { content: string, role: string } }> } } = await axios.request(config)
+      console.log('GPT: ', message,  res.data.choices[0].message.content)
+      return res.data.choices[0].message.content
+   } catch (e) {
+      console.log('fetchGPTReplyError', e)
+      return ''
+   }
+}

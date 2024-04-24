@@ -2,6 +2,7 @@ import { bugCat, images } from './resource'
 // import { chatBot } from './nlp'
 import { Client, Group, GroupMessage, ImageElem, MessageElem, PrivateMessage, Sendable, User } from '../lib'
 import { countDays } from './util'
+import { getBaiReply } from "./nlp";
 
 export function handlePrivateMessage(msg: PrivateMessage, client: Client) {
    if (msg.sender.user_id !== 409174690 && !msg.raw_message.includes('@bot -')) return
@@ -28,7 +29,7 @@ export function handlePrivateMessage(msg: PrivateMessage, client: Client) {
    }
 }
 
-export function handleAtMe (e: GroupMessage, client: Client) {
+export async function handleAtMe (e: GroupMessage, client: Client) {
    const msg = e.raw_message
    // let m: ImageElem | string = msg.replace('@UnrealDudu', '').replace('@PS UnrealDudu', '').replace('吗？', '').replace('吗', '').replace('？', '').replace('?', '').replace('你', '我').replace('@InvincibleDudu', '').replace('@PS InvincibleDudu🍭', '')
    let m: ImageElem | string = msg.replace(/@\S+/, '').replace('吗？', '').replace('吗', '').replace('？', '').replace('?', '').replace('你', '我')
@@ -43,8 +44,9 @@ export function handleAtMe (e: GroupMessage, client: Client) {
       return
    }
    // chatBot(msg.replace(/@\S+/, '')).then((res) => {
-   m = msg.replace(/@\S+/, '').replace(/[?？]/g, '') + '！'
-   client.pickGroup(e.group_id).sendMsg(m)
+   // m = msg.replace(/@\S+/, '').replace(/[?？]/g, '') + '！'
+   const msgToSend = await getBaiReply(msg)
+   if (msgToSend) client.pickGroup(e.group_id).sendMsg(msgToSend)
    // }).catch((e) => console.log('chatBot error 1', e))
 }
 
@@ -90,8 +92,19 @@ export function scheduleMsg(client: Client) {
          time = 0
       }
    }, 1000)
-   schedule.scheduleJob({ hour: 3, minute: 30, second: 5 }, function() {
+   schedule.scheduleJob({ hour: 7, minute: 30, second: 5 }, function() {
       fpsquad.sendMsg('今天距fps小分队停更已过去' + countDays(new Date('02/28/2021')) + '天')
    })
-
+   schedule.scheduleJob({ hour: 11, minute: 15, second: 5 }, function() {
+      fpsquad.sendMsg(images.duck)
+   })
+   schedule.scheduleJob({ hour: 16, minute: 39, second: 5 }, function() {
+      fpsquad.sendMsg(images.duck)
+   })
+   schedule.scheduleJob({ hour: 20, minute: 11, second: 5 }, function() {
+      fpsquad.sendMsg(images.duck)
+   })
+   schedule.scheduleJob({ hour: 0, minute: 31 }, function() {
+      fpsquad.sendMsg(images.duck)
+   })
 }
