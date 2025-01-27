@@ -51,6 +51,7 @@ export async function getBaiReply (message: string) {
       return res.data.choices[0].message.content
    } catch (e) {
       console.log('fetchGPTReplyError', e)
-      return ''
+      // @ts-expect-error
+      return e.cause?.stack
    }
 }

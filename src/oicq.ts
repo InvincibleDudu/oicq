@@ -45,7 +45,7 @@ export async function handleAtMe (e: GroupMessage, client: Client) {
    }
    // chatBot(msg.replace(/@\S+/, '')).then((res) => {
    // m = msg.replace(/@\S+/, '').replace(/[?？]/g, '') + '！'
-   const msgToSend = await getBaiReply(msg)
+   const msgToSend = await getBaiReply(msg.replace(/@\S+/, ''))
    if (msgToSend) client.pickGroup(e.group_id).sendMsg(msgToSend)
    // }).catch((e) => console.log('chatBot error 1', e))
 }
@@ -85,7 +85,7 @@ export function scheduleMsg(client: Client) {
    setInterval(() => {
       time += 1
       cd += 1
-      process.stdout.write(time + 's\r')
+      if (time % 60 === 0) process.stdout.write(time + 's\r')
       if (time >= 2000 && !duckSent) {
          fpsquad.sendMsg(images.duck)
          duckSent = true
